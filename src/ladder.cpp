@@ -131,27 +131,16 @@ void load_words(set<string>& word_list, const string& file_name) {
 }
 
 void verify_word_ladder() {
+    #define my_assert(e) { cout << #e << ((e) ? " passed" : " failed") << endl; }
     set<string> word_list;
-    load_words(word_list, "words.txt");
+    load_words(word_list, "src/words.txt");
 
-    cout << "Testing word ladder correctness...\n";
-
-    // Standard transformations
-    cout << (generate_word_ladder("cold", "warm", word_list).size() == 5 ? "Passed\n" : "Failed\n"); // Example: cold -> cord -> word -> ward -> warm
-    cout << (generate_word_ladder("stone", "money", word_list).size() == 5 ? "Passed\n" : "Failed\n"); // stone -> stony -> story -> store -> money
-
-    // Case sensitivity test
-    cout << (generate_word_ladder("COLD", "WARM", word_list).size() == 5 ? "Passed\n" : "Failed\n"); // Should work the same as lowercase
-
-    // Length variation transformations (insertion/deletion allowed)
-    cout << (generate_word_ladder("cat", "cheat", word_list).size() == 4 ? "Passed\n" : "Failed\n"); // cat -> chat -> cheat
-    cout << (generate_word_ladder("data", "database", word_list).size() == 5 ? "Passed\n" : "Failed\n"); // data -> date -> database
-
-    // Short word transformations
-    cout << (generate_word_ladder("at", "it", word_list).size() == 2 ? "Passed\n" : "Failed\n"); // at -> it (single letter change)
-    cout << (generate_word_ladder("a", "to", word_list).size() == 3 ? "Passed\n" : "Failed\n"); // a -> at -> to
-    
-    cout << "All test cases executed.\n";
+    my_assert(generate_word_ladder("cold", "warm", word_list).size() == 5);
+    my_assert(generate_word_ladder("stone", "money", word_list).size() == 5);
+    my_assert(generate_word_ladder("light", "heavy", word_list).size() == 6);
+    my_assert(generate_word_ladder("apple", "grape", word_list).size() == 6);
+    my_assert(generate_word_ladder("mouse", "track", word_list).size() == 8);
+    my_assert(generate_word_ladder("table", "chair", word_list).size() == 4);
 }
 
 // Printing

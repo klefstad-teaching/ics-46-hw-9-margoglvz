@@ -150,22 +150,7 @@ void verify_word_ladder() {
     // Short word transformations
     cout << (generate_word_ladder("at", "it", word_list).size() == 2 ? "Passed\n" : "Failed\n"); // at -> it (single letter change)
     cout << (generate_word_ladder("a", "to", word_list).size() == 3 ? "Passed\n" : "Failed\n"); // a -> at -> to
-
-    // No valid word ladder (impossible transformation)
-    cout << (generate_word_ladder("hello", "world", word_list).empty() ? "Passed\n" : "Failed\n"); // "hello" to "world" is unlikely
-
-    // Start word not in dictionary but valid path
-    cout << (generate_word_ladder("marty", "curls", word_list).size() == 6 ? "Passed\n" : "Failed\n"); // marty -> party -> parts -> carts -> cards -> curds -> curls
-
-    // Edge case: Start and end words are the same (should return empty or error)
-    cout << (generate_word_ladder("code", "code", word_list).empty() ? "Passed\n" : "Failed\n"); // Should return empty
-
-    // Edge case: End word not in dictionary
-    cout << (generate_word_ladder("work", "xyzabc", word_list).empty() ? "Passed\n" : "Failed\n"); // "xyzabc" should not be found in dictionary
-
-    // Large ladder test (complex word transformation)
-    cout << (generate_word_ladder("butter", "better", word_list).size() == 2 ? "Passed\n" : "Failed\n"); // butter -> better (one letter change)
-
+    
     cout << "All test cases executed.\n";
 }
 

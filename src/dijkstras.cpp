@@ -1,46 +1,43 @@
 #include "dijkstras.h"
 
+#include "dijkstras.h"
+#include <algorithm>
+
+using namespace std;
+
 vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& previous) {
     int n = G.numVertices;
-    vector<int> distance(n, INF);
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+    vector<int> dist(n, INF);
+    previous.assign(n, -1);
+    typedef pair<int, int> pii;
+    priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-    distance[source] = 0;
+    dist[source] = 0;
     pq.push({0, source});
 
-    while (!pq.empty()) {
-        int curr_dist = pq.top().first;
-        int u = pq.top().second;
+    while(!pq.empty()) {
+        auto [d, u] = pq.top();
         pq.pop();
-
-        if (curr_dist > distance[u]) continue;  // Skip outdated distance
-
-        for (const Edge& edge : G[u]) {
-            int v = edge.dst, weight = edge.weight;
-            if (distance[u] + weight < distance[v]) {
-                distance[v] = distance[u] + weight;
+        if (d > dist[u]) continue;
+        for(const Edge& edge : G[u]) {
+            int v = edge.dst;
+            int weight = edge.weight;
+            if(dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
                 previous[v] = u;
-                pq.push({distance[v], v});
+                pq.push({dist[v], v});
             }
         }
     }
-    return distance;
+    return dist;
 }
+
 
 vector<int> extract_shortest_path(const vector<int>& distances, const vector<int>& previous, int destination) {
     vector<int> path;
-
-    // if destination is unreachable then return empty path
-    if (distances[destination] == INF) {
-        return path;
-    }
-
-    // dijkstra is all about backtracking, this allows backtracking from destination to source using the 'previous' array
-    for (int at = destination; at != -1; at = previous[at]) {
+    if(distances[destination] == INF) return path;
+    for(int at = destination; at != -1; at = previous[at])
         path.push_back(at);
-    }
-
-    // reverse to get the path from source to destination
     reverse(path.begin(), path.end());
     return path;
 }

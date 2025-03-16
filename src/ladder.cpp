@@ -1,75 +1,68 @@
 #include "ladder.h"
 
-// Helper
-string to_lower(const string& s) {
-    string new_str = s;
-    transform(new_str.begin(), new_str.end(), new_str.begin(), ::tolower);
-    return new_str;
-}
-
-// Error
-void error(string word1, string word2, string msg) {
-    cout << msg << word1 << word2 << endl;
-}
-
 bool edit_distance_within(const string& str1, const string& str2, int d) {
-    if(d > 1) {
-        int n = str1.size(), m = str2.size();
-        if (abs(n - m) > d)
-            return false;
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
-        for (int i = 0; i <= n; i++)
-            dp[i][0] = i;
-        for (int j = 0; j <= m; j++)
-            dp[0][j] = j;
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-                if (tolower(str1[i - 1]) == tolower(str2[j - 1]))
-                    dp[i][j] = dp[i - 1][j - 1];
-                else
-                    dp[i][j] = 1 + min({ dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1] });
+    size_t len1 = str1.size();
+    size_t len2 = str2.size();
+    
+    // If the length difference exceeds d, return false immediately.
+    if (abs(static_cast<int>(len1 - len2)) > d) return false;
+
+    // Convert both words to lowercase for case-insensitive comparison.
+    string lower1 = to_lower(str1);
+    string lower2 = to_lower(str2);
+
+    // If d == 1, check for one-letter modification, insertion, or deletion.
+    if (d == 1) {
+        if (lower1 == lower2) return true;  // Exact match
+
+        if (len1 == len2) {  
+            int differences = 0;
+            for (size_t i = 0; i < len1; ++i) {
+                if (lower1[i] != lower2[i]) {
+                    differences++;
+                    if (differences > 1) return false;
+                }
             }
+            return true;
         }
-        return dp[n][m] <= d;
-    }
-    
-    // d == 1
-    int len1 = str1.size();
-    int len2 = str2.size();
-    if (abs(len1 - len2) > 1)
-        return false;
-    
-    // equal strings
-    if (to_lower(str1) == to_lower(str2))
-        return true;
-    
-    if (len1 == len2) {
-        int diffCount = 0;
-        for (int i = 0; i < len1; i++) {
-            if (tolower(str1[i]) != tolower(str2[i]))
-                diffCount++;
-            if (diffCount > 1)
-                return false;
-        }
-        return true;
-    } else {
-        const string &shorter = (len1 < len2) ? str1 : str2;
-        const string &longer  = (len1 < len2) ? str2 : str1;
-        int i = 0, j = 0;
-        bool foundDifference = false;
-        while (i < static_cast<int>(shorter.size()) && j < static_cast<int>(longer.size())) {
-            if (tolower(shorter[i]) == tolower(longer[j])) {
+
+        // Check for one-letter insertion or deletion
+        const string &shorter = (len1 < len2) ? lower1 : lower2;
+        const string &longer = (len1 < len2) ? lower2 : lower1;
+        size_t i = 0, j = 0;
+        bool found_difference = false;
+
+        while (i < shorter.size() && j < longer.size()) {
+            if (shorter[i] != longer[j]) {
+                if (found_difference) return false;
+                found_difference = true;
+                j++;  
+            } else {
                 i++;
                 j++;
-            } else {
-                if (foundDifference)
-                    return false;
-                foundDifference = true;
-                j++; // skip one letter in the longer string
             }
         }
         return true;
     }
+
+    // If d > 1, use dynamic programming to compute the edit distance.
+    int n = lower1.size(), m = lower2.size();
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+    for (int i = 0; i <= n; i++) dp[i][0] = i;
+    for (int j = 0; j <= m; j++) dp[0][j] = j;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (lower1[i - 1] == lower2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = 1 + min({dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]});
+            }
+        }
+    }
+
+    return dp[n][m] <= d;
 }
 
 bool is_adjacent(const string& word1, const string& word2) {
@@ -141,6 +134,18 @@ void verify_word_ladder() {
     my_assert(generate_word_ladder("work", "play", word_list).size() == 6);
     my_assert(generate_word_ladder("sleep", "awake", word_list).size() == 8);
     my_assert(generate_word_ladder("car", "cheat", word_list).size() == 4);
+}
+
+// Helper
+string to_lower(const string& s) {
+    string new_str = s;
+    transform(new_str.begin(), new_str.end(), new_str.begin(), ::tolower);
+    return new_str;
+}
+
+// Error
+void error(string word1, string word2, string msg) {
+    cout << msg << word1 << word2 << endl;
 }
 
 // Printing

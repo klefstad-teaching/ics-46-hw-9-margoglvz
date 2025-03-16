@@ -1,6 +1,4 @@
 #include "dijkstras.h"
-
-#include "dijkstras.h"
 #include <algorithm>
 
 using namespace std;
